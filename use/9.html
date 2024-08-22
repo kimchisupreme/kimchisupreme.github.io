@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">   
+</head>
+<body>
+<div id="map" style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"></div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+    mapOption = {
+        center: new kakao.maps.LatLng(35.2010527036365, 129.065266371914), // 지도의 중심좌표
+        level: 4 // 지도의 확대 레벨
+    };  
+
+// 지도를 생성합니다    
+var map = new kakao.maps.Map(mapContainer, mapOption);
+map.setMinLevel(4);
+
+var circle = new kakao.maps.Circle({
+    center : new kakao.maps.LatLng(35.2010527036365, 129.065266371914),  // 원의 중심좌표 입니다 
+    radius: 100, // 미터 단위의 원의 반지름입니다 
+    strokeWeight: 1, // 선의 두께입니다 
+    strokeColor: '#75B8FA', // 선의 색깔입니다
+    strokeOpacity: 1, // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
+    fillColor: '#CFE7FF', // 채우기 색깔입니다
+    fillOpacity: 0.7  // 채우기 불투명도 입니다   
+}); 
+
+// 지도에 원을 표시합니다 
+circle.setMap(map); 
+
+</script>
+</body>
+</html>
