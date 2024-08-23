@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>지적편집도 적용 예제</title>
+</head>
+<body>
+<div id="map" style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"></div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+(function() {
+    // 지도 옵션 설정
+    var mapContainer = document.getElementById('map');
+    var map = new kakao.maps.Map(mapContainer, { 
+        center: new kakao.maps.LatLng(35.2010527036365, 129.065266371914),
+        level: 1
+    }); 
+    map.addOverlayMapTypeId(kakao.maps.MapTypeId.USE_DISTRICT);
+
+    var geocoder = new kakao.maps.services.Geocoder();
+    var bounds = new kakao.maps.LatLngBounds();
+
+    // 주소 리스트
+    var addresses = [
+        '부산진구 가야동 485-1',
+        '부산진구 가야동 504-7',
+    ];
+
+    // 주소 검색 및 마커 추가
+    addresses.forEach(function(address, index) {
+        geocoder.addressSearch(address, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                new kakao.maps.Marker({ map: map, position: coords });
+
+                var content = `
+                    <div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
+                        <span style="font-size:12px; color:#555;">사례 ${index + 1}.</span><br>
+                        <span style="font-size:14px; color:#000;">${address}</span>
+                    </div>
+                `;
+
+                new kakao.maps.CustomOverlay({
+                    map: map,
+                    position: coords,
+                    content: content,
+                    yAnchor: 1,
+                    xAnchor: 1.2
+                });
+
+                bounds.extend(coords);
+            }
+        });
+    });
+
+    // 지도의 경계를 설정하는 코드
+    setTimeout(function() {
+        map.setBounds(bounds);
+    }, 500);
+
+    // 폴리곤 데이터 배열
+    var polygons = [
+    "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
+    "POLYGON ((129.030135905232 35.1488102182199,129.030208622303 35.148785296491,129.030178905369 35.1487572533186,129.030150599647 35.1487477146595,129.030139056182 35.1487515752008,129.030135905232 35.1488102182199))"
+    ];
+
+    // 폴리곤을 지도에 추가
+    polygons.forEach(function(polygonString) {
+        var polygonCoords = polygonString
+            .replace("POLYGON ((", "")
+            .replace("))", "")
+            .split(",")
+            .map(function(coord) {
+                var xy = coord.trim().split(" ");
+                return new kakao.maps.LatLng(parseFloat(xy[1]), parseFloat(xy[0]));
+            });
+
+        new kakao.maps.Polygon({
+            path: polygonCoords,
+            strokeWeight: 1,
+            strokeColor: '#75B8FA',
+            strokeOpacity: 1,
+            strokeStyle: 'solid',
+            fillColor: '#CFE7FF',
+            fillOpacity: 0.7,
+            map: map
+        });
+    });
+})();
+</script>
+</body>
+</html>
