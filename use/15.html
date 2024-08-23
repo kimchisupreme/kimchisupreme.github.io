@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">   
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+    </style>
+
+</head>
+<body>
+<div id="map"></div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+(function() {
+    var centerCoords = new kakao.maps.LatLng(35.1963286,129.1310607);
+    var strokeColor = '#75B8FA';
+    var fillColor = '#CFE7FF';
+
+    // 지도 옵션 설정
+    var mapOption = {
+        center: centerCoords,
+        level: 4
+    };
+
+    // 지도 생성
+    var map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+    map.setMinLevel(4);
+
+    // 원 생성
+    var circle = new kakao.maps.Circle({
+        center: centerCoords,
+        radius: 100,
+        strokeWeight: 1,
+        strokeColor: strokeColor,
+        strokeOpacity: 1,
+        fillColor: fillColor,
+        fillOpacity: 0.7
+    });
+
+    // 지도에 원 표시
+    circle.setMap(map);
+})();
+</script>
+</body>
+</html>
