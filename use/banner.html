@@ -36,11 +36,12 @@
 
         @media (max-width: 600px) {
             .card-container {
-                flex-direction: column;
-                align-items: center;
+                flex-wrap: wrap; /* 세로 스크롤 방지 */
+                justify-content: center; /* 중앙 정렬 */
             }
             .card {
-                max-width: 80%; /* 작은 화면에서 카드가 화면에 더 잘 맞도록 */
+                max-width: 100%; /* 카드가 화면 너비를 차지하게 설정 */
+                flex: 1 1 100%; /* 카드가 줄을 넘어갈 경우 줄바꿈 가능 */
             }
         }
     </style>
