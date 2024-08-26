@@ -9,28 +9,30 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            gap: 5px; /* 이미지 간의 거리 줄이기 */
-            margin: 10px;
+            gap: 10px; /* 이미지 간의 거리 */
+            padding: 10px;
+            box-sizing: border-box;
         }
 
         .card {
-            flex: 1;
-            min-width: 140px; /* 이미지 크기 축소 */
+            flex: 1 1 140px; /* 카드가 최소 140px 너비를 가지며 유연하게 크기 조절 */
             max-width: 140px;
-            overflow: hidden;
         }
 
         .card img {
             width: 100%;
             height: auto;
             display: block;
-            border-radius: 10px; /* 둥근 모서리 적용 (원하는 경우) */
+            border-radius: 10px; /* 둥근 모서리 적용 */
         }
 
         @media (max-width: 600px) {
             .card-container {
                 flex-direction: column;
                 align-items: center;
+            }
+            .card {
+                max-width: 80%; /* 작은 화면에서 카드가 화면에 더 잘 맞도록 */
             }
         }
     </style>
