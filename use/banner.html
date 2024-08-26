@@ -9,31 +9,21 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: space-between;
-            gap: 10px;
+            gap: 5px; /* 이미지 간의 거리 줄이기 */
             margin: 20px;
         }
 
         .card {
             flex: 1;
-            min-width: 285px;
-            max-width: 285px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            min-width: 140px; /* 이미지 크기 축소 */
+            max-width: 140px;
             overflow: hidden;
-            text-align: center;
         }
 
         .card img {
             width: 100%;
             height: auto;
-        }
-
-        .card a {
             display: block;
-            text-decoration: none;
-            color: black;
-            padding: 10px;
-            font-size: 18px;
         }
 
         @media (max-width: 600px) {
