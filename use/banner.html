@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Cards</title>
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 10px;
+            margin: 20px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 285px;
+            max-width: 285px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .card img {
+            width: 100%;
+            height: auto;
+        }
+
+        .card a {
+            display: block;
+            text-decoration: none;
+            color: black;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .card-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card">
+            <a href="https://www.bsrealtor.com/forsale">
+                <img src="https://github.com/kimchisupreme.github.io/img/maemul.png" alt="For Sale">
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://www.bsrealtor.com/note">
+                <img src="https://github.com/kimchisupreme.github.io/img/nowdays.png" alt="Note">
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://www.bsrealtor.com/contact">
+                <img src="https://github.com/kimchisupreme.github.io/img/introduce.png" alt="Contact">
+            </a>
+        </div>
+        <div class="card">
+            <a href="https://www.youtube.com/@eum_link" target="_blank">
+                <img src="https://github.com/kimchisupreme.github.io/img/youtube.png" alt="YouTube">
+            </a>
+        </div>
+    </div>
+</body>
+</html>
