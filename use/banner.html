@@ -11,6 +11,7 @@
             padding: 0;
             overflow: hidden; /* 스크롤 방지 */
             height: 100%; /* 부모 요소에 맞춰 높이를 채움 */
+            width: 100%;
         }
 
         .card-container {
@@ -23,13 +24,11 @@
         }
 
         .card {
-            flex: 1 1 140px; /* 카드가 최소 140px 너비를 가지며 유연하게 크기 조절 */
-            max-width: 140px;
+            flex: 1 1 50px;
+            max-width: 280px;
         }
 
         .card img {
-            width: 100%;
-            height: auto;
             display: block;
             border-radius: 10px; /* 둥근 모서리 적용 */
         }
@@ -40,7 +39,6 @@
                 justify-content: center; /* 중앙 정렬 */
             }
             .card {
-                max-width: 100%; /* 카드가 화면 너비를 차지하게 설정 */
                 flex: 1 1 100%; /* 카드가 줄을 넘어갈 경우 줄바꿈 가능 */
             }
         }
