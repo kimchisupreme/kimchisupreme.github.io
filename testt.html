@@ -1,0 +1,322 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        #details {
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            z-index: 10;
+            word-wrap: break-word;
+            transition: bottom 0.3s ease;
+        }
+        .hidden {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            #details {
+                width: 500px;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+
+            .button-container {
+            display: none;
+        }
+
+        }
+
+        @media (max-width: 767px) {
+            #container {
+                flex-direction: column-reverse;
+            }
+
+            #details {
+                width: 100%;
+                position: absolute;
+                bottom: -30%;
+                left: 0;
+                transition: bottom 0.3s ease;
+                max-height: 60%;
+                overflow-y: auto;
+                box-sizing: border-box;
+                padding-bottom: 10px;
+            }
+        .transaction-item {
+            padding: 5px 0;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .toggle-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 5px 0;
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
+            padding: 0 2px;
+            display: inline-block;
+        }
+
+
+    </style>
+<div id="container">
+    <div id="map"></div>
+        <div id="details">
+        <div class="handle"></div>
+
+        <!-- 이미지 슬라이더 -->
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slide" style="background-image: url('image1.jpg');" alt="사진1"></div>
+                <div class="slide" style="background-image: url('image2.jpg');" alt="사진2"></div>
+                <div class="slide" style="background-image: url('image3.jpg');" alt="사진3"></div>
+            </div>
+        </div>
+
+        <div id="content">
+            
+            <div style="background-color: #f2f7fe; padding: 16px;">
+                <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
+                    <span>부산시 동래구 사직동 </span> <span class="hidden">78-7</span>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">단독주택 · 제2종일반주거지역</div>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">부산역 264m (도보3분) · 중로한면</div>
+                </div>
+                <div class="divider"></div>
+                <div>어디어디 무엇무엇한 무슨 건물 입니다.</div>
+                <div>어디어디 무엇무엇한 무슨 건물 입니다.</div>
+            </div>
+            <div class="divider"></div>
+            <table>
+                <tr><th colspan="2">토지</th></tr>
+                <tr><td>대지면적</td><td>81.4m² | 34.7평</td></tr>
+                <tr><td>용도지역</td><td>일반상업지역</td></tr>
+                <tr><td>공시지가</td><td>2.46억</td></tr>
+            </table>
+
+            <div class="divider"></div>
+
+            <table>
+                <tr><th colspan="2">건축물</th></tr>
+                <tr><td>연면적</td><td>38.7m² | 12.2평</td></tr>
+                <tr><td>건폐율 / 용적률</td><td>87.67% / 207.72%</td></tr>
+                <tr><td>규모</td><td>B1 / 4F</td></tr>
+                <tr><td>주차대수</td><td>-</td></tr>
+                <tr><td>승강기</td><td>-</td></tr>
+                <tr><td>방향</td><td>남 (주출입구 기준)</td></tr>
+                <tr><td>사용승인일</td><td>1983년 03월 23일</td></tr>
+            </table>
+
+            <div class="divider"></div>
+
+            <table>
+                <tr><th colspan="2">금액</th></tr>
+                <tr><td>보증금 / 차임</td><td>- / -</td></tr>
+                <tr><td>수익률</td><td style="font-weight: bold">3.45%</td></tr>
+                <tr><td>평단가</td><td class="highlight" style="font-weight: bold">5,785만원</td></tr>
+                <tr><td>매매가</td><td class="highlight" style="font-weight: bold">14.5억</td></tr>
+            </table>
+
+            <div class="divider"></div>
+                        <div class="transaction-list">
+                <div class="transaction-header" style="font-weight: bold;">인근 거래사례</div>
+                <div class="transaction-content">
+                    <div class="transaction-item" data-address="부산시 동래구 사직동 45-3">부산시 동래구 사직동 45-3</div>
+                    <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
+                </div>
+                        <div class="button-container">
+            <button class="toggle-button" id="expandButton">△</button>
+            <button class="toggle-button" id="collapseButton">▽</button>
+        </div>
+        </div>
+    </div>
+    
+</div>
+</div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+var map, geocoder, circle;
+var activePolygon = null;
+var activeOverlay = null;
+
+function initializeMap() {
+    geocoder = new kakao.maps.services.Geocoder();
+
+    var address = document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)').textContent.trim() + 
+                  document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span.hidden').textContent.trim();
+
+    geocoder.addressSearch(address, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            var mapOption = {
+                center: coords,
+                level: 3,
+                zoomable: true,
+                draggable: false
+            };
+            map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+            map.setMinLevel(3);
+            map.setMaxLevel(4);
+
+            // Circle 생성 및 추가
+            circle = new kakao.maps.Circle({
+                center: coords,
+                radius: 100,
+                strokeWeight: 1,
+                strokeColor: '#75B8FA',
+                strokeOpacity: 1,
+                fillColor: '#CFE7FF',
+                fillOpacity: 0.7
+            });
+            circle.setMap(map);
+
+            setupEventHandlers();
+        } else {
+            console.error("Geocoding failed: " + status);
+        }
+    });
+}
+
+function displayPolygonAndOverlay(index) {
+    if (activePolygon) {
+        activePolygon.setMap(null);  // 기존의 폴리곤 제거
+    }
+    if (activeOverlay) {
+        activeOverlay.setMap(null);  // 기존의 오버레이 제거
+    }
+
+    var polygonString = polygons[index];
+    var polygonCoords = polygonString
+        .replace("POLYGON ((", "")
+        .replace("))", "")
+        .split(",")
+        .map(function(coord) {
+            var xy = coord.trim().split(" ");
+            return new kakao.maps.LatLng(parseFloat(xy[1]), parseFloat(xy[0]));
+        });
+
+    activePolygon = new kakao.maps.Polygon({
+        path: polygonCoords,
+        strokeWeight: 1,
+        strokeColor: '#75B8FA',
+        strokeOpacity: 1,
+        strokeStyle: 'solid',
+        fillColor: '#CFE7FF',
+        fillOpacity: 0.7
+    });
+    activePolygon.setMap(map);
+
+    activeOverlay = new kakao.maps.CustomOverlay({
+        position: polygonCoords[0], // 폴리곤의 첫 번째 좌표에 오버레이 표시
+        content: customOverlays[index],
+        yAnchor: 1,
+        xAnchor: 1.2
+    });
+    activeOverlay.setMap(map);
+
+    // 클릭한 위치로 지도 중심 이동
+    map.setCenter(polygonCoords[0]);
+    details.style.bottom = '-30%';
+}
+
+function setupEventHandlers() {
+    var details = document.getElementById('details');
+    var expandButton = document.getElementById('expandButton');
+    var collapseButton = document.getElementById('collapseButton');
+
+    expandButton.addEventListener('click', function() {
+        details.style.bottom = '0px';
+    });
+
+    collapseButton.addEventListener('click', function() {
+        details.style.bottom = '-30%';
+    });
+
+    document.querySelectorAll('.transaction-item').forEach(function(item, index) {
+        item.addEventListener('click', function() {
+            displayPolygonAndOverlay(index);
+        });
+    });
+}
+
+var polygons = [
+    "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
+    "POLYGON ((129.063735913504 35.2024668526064,129.063670181407 35.2023692973858,129.06363645851 35.2023848719867,129.063606434351 35.2023402075512,129.063506021176 35.2023840916372,129.063582251272 35.2024960360976,129.063643175606 35.2025099126297,129.063735913504 35.2024668526064))"
+];
+
+var customOverlays = [
+    `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
+        <span style="font-size:12px; color:#555;">23년 6월<br></span>
+        <span style="font-size:12px; color:#000;">본건 130m<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
+    </div>`,
+     `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
+        <span style="font-size:12px; color:#555;">본건 130m<br></span>
+        <span style="font-size:12px; color:#000;">2023년 06월<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
+    </div>`
+];
+
+initializeMap();
+</script>
