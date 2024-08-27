@@ -46,21 +46,21 @@
         }
 
         @media (max-width: 767px) {
-    #container {
-        flex-direction: column-reverse;
-    }
+            #container {
+                flex-direction: column-reverse;
+            }
 
-    #details {
-        width: 100%;
-        position: absolute;
-        bottom: -30%; /* 초기에는 details가 절반 숨겨지도록 설정 */
-        left: 0;
-        transition: bottom 0.3s ease;
-        max-height: 60%; /* 최대 높이를 설정하여 스크롤 가능하게 함 */
-        overflow-y: auto; /* 반드시 스크롤 가능하도록 설정 */
-        box-sizing: border-box;
-        padding-bottom: 10px; /* 스크롤 영역에 여유를 줌 */
-    }
+            #details {
+                width: 100%;
+                position: absolute;
+                bottom: -30%; /* 초기에는 details가 절반 숨겨지도록 설정 */
+                left: 0;
+                transition: bottom 0.3s ease;
+                max-height: 60%; /* 최대 높이를 설정하여 스크롤 가능하게 함 */
+                overflow-y: auto; /* 반드시 스크롤 가능하도록 설정 */
+                box-sizing: border-box;
+                padding-bottom: 10px; /* 스크롤 영역에 여유를 줌 */
+            }
 
             .handle {
                 width: 50px;
@@ -122,6 +122,29 @@
             display: inline-block;
         }
 
+        .transaction-list {
+            margin-top: 20px;
+        }
+
+        .transaction-header {
+            cursor: pointer;
+            font-weight: bold;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .transaction-content {
+            display: none;
+            padding: 10px 0;
+        }
+
+        .transaction-item {
+            padding: 5px 0;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -183,6 +206,16 @@
 
             <div class="divider"></div>
 
+            <!-- 거래사례 목록 -->
+            <div class="transaction-list">
+                <div class="transaction-header">거래사례 보기</div>
+                <div class="transaction-content">
+                    <div class="transaction-item" data-address="부산시 동래구 온천동 1412-1">부산시 동래구 사직동 45-3</div>
+                    <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
+                    <div class="transaction-item" data-address="부산시 동래구 사직동 12-7">부산시 동래구 사직동 12-7</div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -190,111 +223,110 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
 <script>
 (function() {
-    var address = document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)').textContent.trim() + document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span.hidden').textContent.trim();
+    var map, geocoder, coords;
 
-    var geocoder = new kakao.maps.services.Geocoder();
+    function initializeMap() {
+        geocoder = new kakao.maps.services.Geocoder();
 
-    geocoder.addressSearch(address, function(result, status) {
-        if (status === kakao.maps.services.Status.OK) {
-            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-            var mapOption = {
-                center: coords,
-                level: 3
-            };
-            var map = new kakao.maps.Map(document.getElementById('map'), mapOption);
-            map.setMinLevel(3);
-            map.setMaxLevel(4);
+        var address = document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)').textContent.trim() + 
+                      document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span.hidden').textContent.trim();
 
-            var strokeColor = '#75B8FA';
-            var fillColor = '#CFE7FF';
-            var circle = new kakao.maps.Circle({
-                center: coords,
-                radius: 100,
-                strokeWeight: 1,
-                strokeColor: strokeColor,
-                strokeOpacity: 1,
-                fillColor: fillColor,
-                fillOpacity: 0.7
-            });
-            
-            circle.setMap(map);
+        geocoder.addressSearch(address, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                var mapOption = {
+                    center: coords,
+                    level: 3
+                };
+                map = new kakao.maps.Map(document.getElementById('map'), mapOption);
 
-            function adjustMapCenter() {
-                map.setCenter(coords);
+                var circle = new kakao.maps.Circle({
+                    center: coords,
+                    radius: 100,
+                    strokeWeight: 1,
+                    strokeColor: '#75B8FA',
+                    strokeOpacity: 1,
+                    fillColor: '#CFE7FF',
+                    fillOpacity: 0.7
+                });
+
+                circle.setMap(map);
+            } else {
+                console.error("Geocoding failed: " + status);
             }
-
-            var details = document.getElementById('details');
-            var startY, currentY, startBottom, isDragging = false;
-
-document.querySelector('.handle').addEventListener('mousedown', function(e) {
-    isDragging = true;
-    startY = e.clientY;
-    startBottom = parseInt(window.getComputedStyle(details).bottom);
-    e.preventDefault();  // 선택 방지
-    e.stopPropagation();  // 드래그 시 스크롤 이벤트 중지
-});
-
-document.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-        currentY = e.clientY;
-        var newBottom = startBottom + (startY - currentY);  // 위로 드래그 시 더 크게, 아래로 드래그 시 더 작게
-        details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
-        e.preventDefault();  // 선택 방지
-        e.stopPropagation();  // 드래그 시 스크롤 이벤트 중지
+        });
     }
-});
 
-document.addEventListener('mouseup', function(e) {
-    if (isDragging) {
-        isDragging = false;
-        if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
-            details.style.bottom = '0px';
-        } else {
-            details.style.bottom = '-10%';
+    function adjustMapCenter() {
+        if (coords) {
+            map.setCenter(coords);
         }
-        adjustMapCenter();
-        e.stopPropagation();  // 드래그 후 스크롤 이벤트 중지
     }
-});
 
+    function searchAndMove(address) {
+        geocoder.addressSearch(address, function(result, status) {
+            if (status === kakao.maps.services.Status.OK) {
+                var newCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                map.setCenter(newCoords);
+                new kakao.maps.Marker({
+                    map: map,
+                    position: newCoords
+                });
+            } else {
+                console.error("Geocoding failed: " + status);
+            }
+        });
+    }
 
+    document.querySelector('.transaction-header').addEventListener('click', function() {
+        var content = document.querySelector('.transaction-content');
+        content.style.display = content.style.display === 'none' || content.style.display === '' ? 'block' : 'none';
+    });
 
+    document.querySelectorAll('.transaction-item').forEach(function(item) {
+        item.addEventListener('click', function() {
+            var address = item.getAttribute('data-address');
+            searchAndMove(address);
+        });
+    });
 
-            document.querySelector('.handle').addEventListener('touchstart', function(e) {
-                isDragging = true;
-                startY = e.touches[0].clientY;
-                startBottom = parseInt(window.getComputedStyle(details).bottom);
-            });
+    // Handle for dragging the details pane
+    var details = document.getElementById('details');
+    var startY, currentY, startBottom, isDragging = false;
 
-            document.addEventListener('touchmove', function(e) {
-                if (isDragging) {
-                    currentY = e.touches[0].clientY;
-                    var newBottom = startBottom + (startY - currentY);  // 위로 드래그 시 더 크게, 아래로 드래그 시 더 작게
-                    details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
-                }
-            });
+    document.querySelector('.handle').addEventListener('mousedown', function(e) {
+        isDragging = true;
+        startY = e.clientY;
+        startBottom = parseInt(window.getComputedStyle(details).bottom);
+        e.preventDefault();  // Prevent selection
+        e.stopPropagation();  // Prevent scroll events while dragging
+    });
 
-            document.addEventListener('touchend', function() {
-                if (isDragging) {
-                    isDragging = false;
-                    if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
-                        details.style.bottom = '0px';
-                    } else {
-                        details.style.bottom = '-10%';
-                    }
-                    adjustMapCenter();
-                }
-            });
-
-            details.addEventListener('scroll', function() {
-                if (!isDragging) {
-                }
-            });
-
-        } else {
-            console.error("Geocoding failed: " + status);
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            currentY = e.clientY;
+            var newBottom = startBottom + (startY - currentY);
+            details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
+            e.preventDefault();
+            e.stopPropagation();
         }
     });
+
+    document.addEventListener('mouseup', function(e) {
+        if (isDragging) {
+            isDragging = false;
+            if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
+                details.style.bottom = '0px';
+            } else {
+                details.style.bottom = '-10%';
+            }
+            e.stopPropagation();
+        }
+    });
+
+    // Initialize map on page load
+    initializeMap();
+
 })();
 </script>
 </body>
