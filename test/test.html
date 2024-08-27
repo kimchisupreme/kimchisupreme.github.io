@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
+<style>
         body, html {
             margin: 0;
             padding: 0;
@@ -46,6 +41,11 @@
                 left: 0;
                 top: 0;
             }
+
+            .button-container {
+            display: none;
+        }
+
         }
 
         @media (max-width: 767px) {
@@ -64,6 +64,33 @@
                 box-sizing: border-box;
                 padding-bottom: 10px;
             }
+        .transaction-item {
+            padding: 5px 0;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .toggle-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
         }
 
         table {
@@ -92,36 +119,8 @@
             display: inline-block;
         }
 
-        .transaction-item {
-            padding: 5px 0;
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
-        }
 
-        .button-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        .toggle-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 2px;
-        }
-
-        .toggle-button:hover {
-            background-color: #0056b3;
-        }
     </style>
-</head>
-<body>
 <div id="container">
     <div id="map"></div>
         <div id="details">
@@ -318,9 +317,4 @@ var customOverlays = [
 
 initializeMap();
 </script>
-
-
-
-
-</body>
 </html>
