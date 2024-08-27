@@ -1,6 +1,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-    body, html {
+    body {
         margin: 0;
         padding: 0;
         width: 100%;
@@ -18,6 +18,7 @@
         flex: 1;
         width: 100%;
         height: 100%;
+        transition: height 0.3s ease;
     }
 
     #details {
@@ -28,8 +29,8 @@
         box-sizing: border-box;
         z-index: 10;
         word-wrap: break-word;
-        transition: bottom 0.3s ease;
-        position: relative; /* relative로 설정하여 내부 요소 위치 제어 */
+        transition: bottom 0.3s ease, max-height 0.3s ease;
+        position: relative;
     }
 
     .hidden {
@@ -41,7 +42,7 @@
         height: 200px;
         overflow: hidden;
         position: relative;
-        margin-bottom: 15px; /* 슬라이더와 컨텐츠 사이에 간격 추가 */
+        margin-bottom: 15px;
     }
 
     .slider {
@@ -57,10 +58,10 @@
     }
 
     .button-container {
-        position: fixed; /* fixed로 설정하여 항상 따라오도록 */
-        bottom: 20px; /* 화면 하단으로 위치 조정 */
-        right: 20px; /* 화면 우측으로 위치 조정 */
-        z-index: 100; /* 지도와 상세 정보 상자 위에 표시되도록 */
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
     }
 
     .toggle-button {
@@ -97,16 +98,33 @@
             flex-direction: column-reverse;
         }
 
+        #map {
+            height: 40%;
+        }
+
         #details {
             width: 100%;
             position: absolute;
-            bottom: -80%;
+            bottom: 0;
             left: 0;
-            transition: bottom 0.3s ease;
             max-height: 100%;
             overflow-y: auto;
             box-sizing: border-box;
             padding-bottom: 10px;
+        }
+
+        #details.full-screen {
+            bottom: 0;
+            max-height: 100vh;
+        }
+
+        #details.collapsed {
+            bottom: -60%;
+            max-height: 40%;
+        }
+
+        #map.hidden {
+            height: 0;
         }
     }
 
@@ -202,8 +220,7 @@
     </div>
 
     <div class="button-container">
-        <button class="toggle-button" id="expandButton">△</button>
-        <button class="toggle-button" id="collapseButton">▽</button>
+        <button class="toggle-button" id="toggleButton">지도보기</button>
     </div>
 </div>
 
@@ -252,7 +269,6 @@ function setupSlider() {
 }
 
 
-setupSlider();
 
 function initializeMap() {
     geocoder = new kakao.maps.services.Geocoder();
@@ -329,29 +345,53 @@ function displayPolygonAndOverlay(index) {
 
     // 클릭한 위치로 지도 중심 이동
     map.setCenter(polygonCoords[0]);
-    details.style.bottom = '-80%';
+
+    // 지도 표시 상태로 전환
+    toggleMapView(true);
 }
 
 function setupEventHandlers() {
-    var details = document.getElementById('details');
-    var expandButton = document.getElementById('expandButton');
-    var collapseButton = document.getElementById('collapseButton');
+    const details = document.getElementById('details');
+    const map = document.getElementById('map');
+    const toggleButton = document.getElementById('toggleButton');
 
-    expandButton.addEventListener('click', function() {
-        details.style.bottom = '0px';
-        details.style.maxHeight = '100%';
+    // 기본 상태는 "지도가리기" (디테일이 전체 화면을 차지)
+    let mapVisible = false;
+
+    function toggleMapView(showMap) {
+        if (showMap) {
+            details.classList.remove('full-screen');
+            details.classList.add('collapsed');
+            map.classList.remove('hidden');
+            toggleButton.textContent = '정보보기';
+            mapVisible = true;
+        } else {
+            details.classList.add('full-screen');
+            details.classList.remove('collapsed');
+            map.classList.add('hidden');
+            toggleButton.textContent = '지도보기';
+            mapVisible = false;
+        }
+    }
+
+    toggleButton.addEventListener('click', function () {
+        toggleMapView(!mapVisible);
     });
 
-    collapseButton.addEventListener('click', function() {
-        details.style.bottom = '-80%';
-    });
-
-    document.querySelectorAll('.transaction-item').forEach(function(item, index) {
-        item.addEventListener('click', function() {
+    document.querySelectorAll('.transaction-item').forEach(function (item, index) {
+        item.addEventListener('click', function () {
             displayPolygonAndOverlay(index);
         });
     });
+
+    // 함수를 전역으로 사용하기 위해 재정의
+    window.toggleMapView = toggleMapView;
 }
+
+// 초기화
+initializeMap();
+setupEventHandlers();
+setupSlider();
 
 
 var polygons = [
@@ -369,6 +409,4 @@ var customOverlays = [
         <span style="font-size:12px; color:#000;">2023년 06월<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
     </div>`
 ];
-
-initializeMap();
 </script>
