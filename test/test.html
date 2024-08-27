@@ -1,143 +1,154 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-        }
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
 
-        #container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
+    #container {
+        display: flex;
+        width: 100%;
+        height: 100%;
+    }
 
-        #map {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-        }
+    #map {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+    }
 
+    #details {
+        background: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        overflow-y: auto;
+        box-sizing: border-box;
+        z-index: 10;
+        word-wrap: break-word;
+        transition: bottom 0.3s ease;
+        position: relative; /* relative로 설정하여 내부 요소 위치 제어 */
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .slider-container {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 15px; /* 슬라이더와 컨텐츠 사이에 간격 추가 */
+    }
+
+    .slider {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s ease;
+    }
+
+    .slide {
+        min-width: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .button-container {
+        position: fixed; /* fixed로 설정하여 항상 따라오도록 */
+        bottom: 20px; /* 화면 하단으로 위치 조정 */
+        right: 20px; /* 화면 우측으로 위치 조정 */
+        z-index: 100; /* 지도와 상세 정보 상자 위에 표시되도록 */
+    }
+
+    .toggle-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+    .toggle-button:hover {
+        background-color: #0056b3;
+    }
+
+    @media (min-width: 768px) {
         #details {
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            overflow-y: auto;
-            box-sizing: border-box;
-            z-index: 10;
-            word-wrap: break-word;
-            transition: bottom 0.3s ease;
-        }
-        .hidden {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            #details {
-                width: 500px;
-                height: 100%;
-                position: absolute;
-                left: 0;
-                top: 0;
-            }
-
-            .button-container {
-            display: none;
-        }
-
-        }
-
-        @media (max-width: 767px) {
-            #container {
-                flex-direction: column-reverse;
-            }
-
-            #details {
-                width: 100%;
-                position: absolute;
-                bottom: -30%;
-                left: 0;
-                transition: bottom 0.3s ease;
-                max-height: 60%;
-                overflow-y: auto;
-                box-sizing: border-box;
-                padding-bottom: 10px;
-            }
-        .transaction-item {
-            padding: 5px 0;
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+            width: 500px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
         }
 
         .button-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            display: none;
+        }
+    }
+
+    @media (max-width: 767px) {
+        #container {
+            flex-direction: column-reverse;
         }
 
-        .toggle-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 2px;
-        }
-
-        .toggle-button:hover {
-            background-color: #0056b3;
-        }
-        }
-
-        table {
+        #details {
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-            table-layout: fixed;
+            position: absolute;
+            bottom: -80%;
+            left: 0;
+            transition: bottom 0.3s ease;
+            max-height: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding-bottom: 10px;
         }
+    }
 
-        th, td {
-            padding: 5px 0;
-            text-align: left;
-            vertical-align: top;
-            white-space: nowrap;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        table-layout: fixed;
+    }
 
-        .divider {
-            height: 1px;
-            background-color: #ddd;
-            margin: 10px 0;
-        }
+    th, td {
+        padding: 5px 0;
+        text-align: left;
+        vertical-align: top;
+        white-space: nowrap;
+    }
 
-        .highlight {
-            background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
-            padding: 0 2px;
-            display: inline-block;
-        }
+    .divider {
+        height: 1px;
+        background-color: #ddd;
+        margin: 10px 0;
+    }
 
+    .highlight {
+        background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
+        padding: 0 2px;
+        display: inline-block;
+    }
+</style>
 
-    </style>
 <div id="container">
     <div id="map"></div>
-        <div id="details">
-        <div class="handle"></div>
-
-        <!-- 이미지 슬라이더 -->
+    <div id="details">
         <div class="slider-container">
             <div class="slider">
-                <div class="slide" style="background-image: url('image1.jpg');" alt="사진1"></div>
-                <div class="slide" style="background-image: url('image2.jpg');" alt="사진2"></div>
-                <div class="slide" style="background-image: url('image3.jpg');" alt="사진3"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/15173232/%ED%92%8D%EB%85%84%EC%98%A4%EB%A6%AC%EB%B0%95%EC%82%AC-%EC%A0%90%EC%A3%BC-%EC%A0%9C%EA%B3%B5.jpg');" alt="사진1"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/15173231/%ED%92%8D%EB%85%84%EC%98%A4%EB%A6%AC%EB%B0%95%EC%82%AC-%EC%A0%90%EC%A3%BC-%EC%A0%9C%EA%B3%B52.jpg');" alt="사진2"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/05193148/%ED%8C%94%EB%A0%88%EB%93%9C-%EC%8B%A0-kimhj8574%EB%8B%98-%EC%9D%B8%EC%8A%A4%ED%83%80%EA%B7%B8%EB%9E%A8.jpg');" alt="사진3"></div>
             </div>
         </div>
 
         <div id="content">
-            
             <div style="background-color: #f2f7fe; padding: 16px;">
                 <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
                     <span>부산시 동래구 사직동 </span> <span class="hidden">78-7</span>
@@ -180,20 +191,20 @@
             </table>
 
             <div class="divider"></div>
-                        <div class="transaction-list">
+            <div class="transaction-list">
                 <div class="transaction-header" style="font-weight: bold;">인근 거래사례</div>
                 <div class="transaction-content">
                     <div class="transaction-item" data-address="부산시 동래구 사직동 45-3">부산시 동래구 사직동 45-3</div>
                     <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
                 </div>
-                        <div class="button-container">
-            <button class="toggle-button" id="expandButton">△</button>
-            <button class="toggle-button" id="collapseButton">▽</button>
-        </div>
+            </div>
         </div>
     </div>
-    
-</div>
+
+    <div class="button-container">
+        <button class="toggle-button" id="expandButton">△</button>
+        <button class="toggle-button" id="collapseButton">▽</button>
+    </div>
 </div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
@@ -201,6 +212,47 @@
 var map, geocoder, circle;
 var activePolygon = null;
 var activeOverlay = null;
+
+function setupSlider() {
+    const slider = document.querySelector('.slider');
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    // 클론 노드 추가 (첫 번째 슬라이드를 마지막에 복제)
+    const firstClone = slides[0].cloneNode(true);
+    const lastClone = slides[totalSlides - 1].cloneNode(true);
+    
+    slider.appendChild(firstClone);
+    slider.insertBefore(lastClone, slides[0]);
+
+    // 슬라이더의 초기 위치 설정 (첫 번째 슬라이드로 설정)
+    slider.style.transform = `translateX(-100%)`;
+
+    function showSlide(index) {
+        slider.style.transition = 'transform 0.5s ease-in-out';
+        slider.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    function nextSlide() {
+        currentIndex++;
+        showSlide(currentIndex);
+
+        // 슬라이드가 끝까지 간 경우 복제된 첫 슬라이드에서 원래 첫 슬라이드로 순간 이동
+        if (currentIndex === totalSlides + 1) {
+            setTimeout(() => {
+                slider.style.transition = 'none';
+                currentIndex = 1; // 첫 슬라이드로 돌아가기
+                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }, 500); // 애니메이션 시간과 동일하게 설정
+        }
+    }
+
+    setInterval(nextSlide, 3000);
+}
+
+
+setupSlider();
 
 function initializeMap() {
     geocoder = new kakao.maps.services.Geocoder();
@@ -277,7 +329,7 @@ function displayPolygonAndOverlay(index) {
 
     // 클릭한 위치로 지도 중심 이동
     map.setCenter(polygonCoords[0]);
-    details.style.bottom = '-30%';
+    details.style.bottom = '-80%';
 }
 
 function setupEventHandlers() {
@@ -287,10 +339,11 @@ function setupEventHandlers() {
 
     expandButton.addEventListener('click', function() {
         details.style.bottom = '0px';
+        details.style.maxHeight = '100%';
     });
 
     collapseButton.addEventListener('click', function() {
-        details.style.bottom = '-30%';
+        details.style.bottom = '-80%';
     });
 
     document.querySelectorAll('.transaction-item').forEach(function(item, index) {
@@ -299,6 +352,7 @@ function setupEventHandlers() {
         });
     });
 }
+
 
 var polygons = [
     "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
