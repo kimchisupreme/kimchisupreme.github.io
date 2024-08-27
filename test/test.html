@@ -34,6 +34,9 @@
             word-wrap: break-word;
             transition: bottom 0.3s ease;
         }
+        .hidden {
+            display: none;
+        }
 
         @media (min-width: 768px) {
             #details {
@@ -60,15 +63,6 @@
                 overflow-y: auto;
                 box-sizing: border-box;
                 padding-bottom: 10px;
-            }
-
-            .handle {
-                width: 50px;
-                height: 5px;
-                background: #ccc;
-                margin: 10px auto;
-                border-radius: 5px;
-                cursor: pointer;
             }
         }
 
@@ -104,12 +98,33 @@
             color: blue;
             text-decoration: underline;
         }
+
+        .button-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .toggle-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin: 2px;
+        }
+
+        .toggle-button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 <div id="container">
     <div id="map"></div>
-    <div id="details">
+        <div id="details">
         <div class="handle"></div>
 
         <!-- 이미지 슬라이더 -->
@@ -122,6 +137,7 @@
         </div>
 
         <div id="content">
+            
             <div style="background-color: #f2f7fe; padding: 16px;">
                 <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
                     <span>부산시 동래구 사직동 </span> <span class="hidden">78-7</span>
@@ -171,9 +187,14 @@
                     <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
                     <div class="transaction-item" data-address="부산시 동래구 사직동 12-7">부산시 동래구 사직동 12-7</div>
                 </div>
-
+                        <div class="button-container">
+            <button class="toggle-button" id="expandButton">△</button>
+            <button class="toggle-button" id="collapseButton">▽</button>
+        </div>
         </div>
     </div>
+    
+</div>
 </div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
@@ -219,6 +240,7 @@ function searchAndDisplay(address) {
             var newCoords = new kakao.maps.LatLng(result[0].y, result[0].x);
             map.setCenter(newCoords);
 
+            // 폴리곤 생성
             var polygonPath = [
                 new kakao.maps.LatLng(result[0].y + 0.0003, result[0].x - 0.0003),
                 new kakao.maps.LatLng(result[0].y + 0.0003, result[0].x + 0.0003),
@@ -236,6 +258,7 @@ function searchAndDisplay(address) {
             });
             polygon.setMap(map);
 
+            // 커스텀 오버레이 생성
             var content = '<div style="padding:5px;">' + address + '</div>';
             var customOverlay = new kakao.maps.CustomOverlay({
                 position: newCoords,
@@ -251,36 +274,15 @@ function searchAndDisplay(address) {
 
 function setupEventHandlers() {
     var details = document.getElementById('details');
-    var startY, currentY, startBottom, isDragging = false;
+    var expandButton = document.getElementById('expandButton');
+    var collapseButton = document.getElementById('collapseButton');
 
-    document.querySelector('.handle').addEventListener('mousedown', function(e) {
-        isDragging = true;
-        startY = e.clientY;
-        startBottom = parseInt(window.getComputedStyle(details).bottom);
-        e.preventDefault();
-        e.stopPropagation();
+    expandButton.addEventListener('click', function() {
+        details.style.bottom = '0px';
     });
 
-    document.addEventListener('mousemove', function(e) {
-        if (isDragging) {
-            currentY = e.clientY;
-            var newBottom = startBottom + (startY - currentY);
-            details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
-            e.preventDefault();
-            e.stopPropagation();
-        }
-    });
-
-    document.addEventListener('mouseup', function(e) {
-        if (isDragging) {
-            isDragging = false;
-            if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
-                details.style.bottom = '0px';
-            } else {
-                details.style.bottom = '-10%';
-            }
-            e.stopPropagation();
-        }
+    collapseButton.addEventListener('click', function() {
+        details.style.bottom = '-30%';
     });
 
     document.querySelectorAll('.transaction-item').forEach(function(item) {
