@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        #map {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+        }
+
+        #details {
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            z-index: 10;
+            word-wrap: break-word;
+            transition: bottom 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            #details {
+                width: 500px;
+                height: 100%;
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+
+        @media (max-width: 767px) {
+    #container {
+        flex-direction: column-reverse;
+    }
+
+    #details {
+        width: 100%;
+        position: absolute;
+        bottom: -30%; /* 초기에는 details가 절반 숨겨지도록 설정 */
+        left: 0;
+        transition: bottom 0.3s ease;
+        max-height: 60%; /* 최대 높이를 설정하여 스크롤 가능하게 함 */
+        overflow-y: auto; /* 반드시 스크롤 가능하도록 설정 */
+        box-sizing: border-box;
+        padding-bottom: 10px; /* 스크롤 영역에 여유를 줌 */
+    }
+
+            .handle {
+                width: 50px;
+                height: 5px;
+                background: #ccc;
+                margin: 10px auto;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+
+        .slider-container {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .slider {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .slide {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 5px 0;
+            text-align: left;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        .divider {
+            height: 1px;
+            background-color: #ddd;
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
+            padding: 0 2px;
+            display: inline-block;
+        }
+
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="map"></div>
+    <div id="details">
+        <div class="handle"></div>
+
+        <!-- 이미지 슬라이더 -->
+        <div class="slider-container">
+            <div class="slider">
+                <div class="slide" style="background-image: url('image1.jpg');"></div>
+                <div class="slide" style="background-image: url('image2.jpg');"></div>
+                <div class="slide" style="background-image: url('image3.jpg');"></div>
+            </div>
+        </div>
+
+        <div id="content">
+            <div style="background-color: #f2f7fe; padding: 16px;">
+                <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
+                    <span>부산시 동래구 사직동 </span> <span class="hidden">78-7</span>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">단독주택 · 제2종일반주거지역</div>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">부산역 264m (도보3분) · 중로한면</div>
+                </div>
+                <div class="divider"></div>
+                <div>어디어디 무엇무엇한 무슨 건물 입니다.</div>
+                <div>어디어디 무엇무엇한 무슨 건물 입니다.</div>
+            </div>
+            <div class="divider"></div>
+            <table>
+                <tr><th colspan="2">토지</th></tr>
+                <tr><td>대지면적</td><td>81.4m² | 34.7평</td></tr>
+                <tr><td>용도지역</td><td>일반상업지역</td></tr>
+                <tr><td>공시지가</td><td>2.46억</td></tr>
+            </table>
+
+            <div class="divider"></div>
+
+            <table>
+                <tr><th colspan="2">건축물</th></tr>
+                <tr><td>연면적</td><td>38.7m² | 12.2평</td></tr>
+                <tr><td>건폐율 / 용적률</td><td>87.67% / 207.72%</td></tr>
+                <tr><td>규모</td><td>B1 / 4F</td></tr>
+                <tr><td>주차대수</td><td>-</td></tr>
+                <tr><td>승강기</td><td>-</td></tr>
+                <tr><td>방향</td><td>남 (주출입구 기준)</td></tr>
+                <tr><td>사용승인일</td><td>1983년 03월 23일</td></tr>
+            </table>
+
+            <div class="divider"></div>
+
+            <table>
+                <tr><th colspan="2">금액</th></tr>
+                <tr><td>보증금 / 차임</td><td>- / -</td></tr>
+                <tr><td>수익률</td><td style="font-weight: bold">3.45%</td></tr>
+                <tr><td>평단가</td><td class="highlight" style="font-weight: bold">5,785만원</td></tr>
+                <tr><td>매매가</td><td class="highlight" style="font-weight: bold">14.5억</td></tr>
+            </table>
+
+            <div class="divider"></div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+(function() {
+    var address = document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)').textContent.trim() + document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span.hidden').textContent.trim();
+
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    geocoder.addressSearch(address, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            var mapOption = {
+                center: coords,
+                level: 3
+            };
+            var map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+            map.setMinLevel(3);
+            map.setMaxLevel(4);
+
+            var strokeColor = '#75B8FA';
+            var fillColor = '#CFE7FF';
+            var circle = new kakao.maps.Circle({
+                center: coords,
+                radius: 100,
+                strokeWeight: 1,
+                strokeColor: strokeColor,
+                strokeOpacity: 1,
+                fillColor: fillColor,
+                fillOpacity: 0.7
+            });
+            
+            circle.setMap(map);
+
+            function adjustMapCenter() {
+                map.setCenter(coords);
+            }
+
+            var details = document.getElementById('details');
+            var startY, currentY, startBottom, isDragging = false;
+
+document.querySelector('.handle').addEventListener('mousedown', function(e) {
+    isDragging = true;
+    startY = e.clientY;
+    startBottom = parseInt(window.getComputedStyle(details).bottom);
+    e.preventDefault();  // 선택 방지
+    e.stopPropagation();  // 드래그 시 스크롤 이벤트 중지
+});
+
+document.addEventListener('mousemove', function(e) {
+    if (isDragging) {
+        currentY = e.clientY;
+        var newBottom = startBottom + (startY - currentY);  // 위로 드래그 시 더 크게, 아래로 드래그 시 더 작게
+        details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
+        e.preventDefault();  // 선택 방지
+        e.stopPropagation();  // 드래그 시 스크롤 이벤트 중지
+    }
+});
+
+document.addEventListener('mouseup', function(e) {
+    if (isDragging) {
+        isDragging = false;
+        if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
+            details.style.bottom = '0px';
+        } else {
+            details.style.bottom = '-10%';
+        }
+        adjustMapCenter();
+        e.stopPropagation();  // 드래그 후 스크롤 이벤트 중지
+    }
+});
+
+
+
+
+            document.querySelector('.handle').addEventListener('touchstart', function(e) {
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                startBottom = parseInt(window.getComputedStyle(details).bottom);
+            });
+
+            document.addEventListener('touchmove', function(e) {
+                if (isDragging) {
+                    currentY = e.touches[0].clientY;
+                    var newBottom = startBottom + (startY - currentY);  // 위로 드래그 시 더 크게, 아래로 드래그 시 더 작게
+                    details.style.bottom = Math.min(Math.max(-details.offsetHeight, newBottom), 0) + 'px';
+                }
+            });
+
+            document.addEventListener('touchend', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    if (parseInt(details.style.bottom) > -details.offsetHeight / 2) {
+                        details.style.bottom = '0px';
+                    } else {
+                        details.style.bottom = '-10%';
+                    }
+                    adjustMapCenter();
+                }
+            });
+
+            details.addEventListener('scroll', function() {
+                if (!isDragging) {
+                    adjustMapCenter();
+                }
+            });
+
+        } else {
+            console.error("Geocoding failed: " + status);
+        }
+    });
+})();
+</script>
+</body>
+</html>
