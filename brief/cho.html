@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">   
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+(function() {
+    var centerCoords = new kakao.maps.LatLng(35.1137094, 129.0368117);
+
+    // 지도 옵션 설정
+    var mapOption = {
+        center: centerCoords,
+        level: 1
+    };
+
+    // 지도 생성
+    var map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+    map.setMinLevel(1);
+    map.setMaxLevel(4);
+
+    // 마커 위치 설정 및 생성
+    var marker = new kakao.maps.Marker({
+        position: centerCoords  // centerCoords를 그대로 사용
+    });
+
+    // 마커를 지도에 표시
+    marker.setMap(map);
+
+
+
+    //폴리곤
+        var polygons = [
+        "POLYGON ((129.036896957954 35.1136934943943,129.036894181053 35.1136897365268,129.036893478594 35.1136887812885,129.036885605337 35.1136699541377,129.036872431194 35.1136703636017,129.036862943484 35.1136470301111,129.036753508694 35.1136897775843,129.036730981212 35.113698572424,129.036756343134 35.1137506367229,129.036760401134 35.1137490040754,129.036896957954 35.1136934943943))"
+    ];
+
+    // 폴리곤을 지도에 추가
+    polygons.forEach(function(polygonString) {
+        var polygonCoords = polygonString
+            .replace("POLYGON ((", "")
+            .replace("))", "")
+            .split(",")
+            .map(function(coord) {
+                var xy = coord.trim().split(" ");
+                return new kakao.maps.LatLng(parseFloat(xy[1]), parseFloat(xy[0]));
+            });
+
+        new kakao.maps.Polygon({
+            path: polygonCoords,
+            strokeWeight: 1,
+            strokeColor: '#75B8FA',
+            strokeOpacity: 1,
+            strokeStyle: 'solid',
+            fillColor: '#CFE7FF',
+            fillOpacity: 0.7,
+            map: map
+        });
+    });
+
+})();
+</script>
+</body>
+</html>
