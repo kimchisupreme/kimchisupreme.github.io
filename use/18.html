@@ -1,0 +1,417 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
+
+#container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+    #map {
+        width: 100%;
+        height: 100%;
+        transition: height 0.3s ease;
+    }
+
+    #details {
+        background: rgb(255, 255, 255);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        overflow-y: auto;
+        box-sizing: border-box;
+        z-index: 10;
+        word-wrap: break-word;
+        transition: bottom 0.3s ease, max-height 0.3s ease;
+        position: relative;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+
+
+    .button-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
+
+    .toggle-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+    .toggle-button:hover {
+        background-color: #0056b3;
+    }
+
+    @media (min-width: 768px) {
+        #details {
+            width: 500px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .button-container {
+            display: none;
+        }
+
+        .tab-menu, .tab-item,.tab-item:last-child  {
+            display: none;
+
+        }
+    }
+
+    /*이 부분이 모바일임*/
+    @media (max-width: 767px) {
+        #container {
+            flex-direction: column-reverse;
+        }
+
+        #map {
+            height: 30vh;
+            bottom: 70%;
+        }
+
+        #details {
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            max-height: 100%;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding-bottom: 10px;
+            height: 70vh;
+        }
+
+        #details.full-screen {
+            bottom: 0;
+            max-height: 100vh;
+        }
+
+        #details.collapsed {
+            bottom: -60%;
+            max-height: 40%;
+        }
+
+        #map.hidden {
+            height: 0;
+        }
+
+        .tab-menu {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+
+    .tab-item {
+        flex: 1;
+        padding: 10px;
+        text-align: center;
+        cursor: pointer;
+        background-color: #f1f1f1;
+        border-right: 1px solid #ddd;
+    }
+
+    .tab-item:last-child {
+        border-right: none;
+    }
+
+    .tab-item.active {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+}
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        table-layout: fixed;
+    }
+
+    th, td {
+        padding: 5px 0;
+        text-align: left;
+        vertical-align: top;
+        white-space: nowrap;
+    }
+
+    .divider {
+        height: 1px;
+        background-color: #ddd;
+        margin: 10px 0;
+    }
+
+    .highlight {
+        background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
+        padding: 0 2px;
+        display: inline-block;
+    }
+
+    .transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-item {
+    border-bottom: 1px solid #ddd;
+}
+
+.transaction-address {
+    padding: 10px;
+    vertical-align: middle; /* 주소가 상단에 정렬되도록 설정 */
+}
+
+.transaction-details {
+    padding: 10px;
+    text-align: left;
+    font-size: 12px;
+    color: #555;
+    vertical-align: middle; /* 상단 정렬 */
+}
+
+.transaction-date, .transaction-distance {
+    display: block;
+    color: #888; /* 회색 폰트 */
+    font-size: 12px; /* 작은 폰트 크기 */
+}
+
+.transaction-distance {
+    margin-top: 5px; /* 상하 간격 조절 */
+}
+
+</style>
+
+<body>
+<div id="container">
+    <div id="map"></div>
+    <div id="details">
+
+        <div id="content">
+            <div style="background-color: #f2f7fe; padding: 16px;">
+                <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
+                    <span>부산시 동래구 안락동 </span> <span class="hidden">425-105</span><span style="font-size: 12px;">*서원시장 상권중심</span>
+                    <div class="divider"></div>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">2종근생 · 일반상업지역</div>
+                    <div style="font-size: 14px; color: #8e8e93; font-weight:normal;">충렬사역 89m (도보1분) · 중로한면</div>
+                </div>
+            </div>
+            <div class="divider"></div>
+            <div class="tab-menu">
+                <div class="tab-item active" data-tab="land">토지</div>
+                <div class="tab-item" data-tab="building">건축물</div>
+                <div class="tab-item" data-tab="price">금액</div>
+                <div class="tab-item" data-tab="transaction">거래사례</div>
+            </div>
+
+            <div class="tab-content active" id="land">
+                <table>
+                    <tr><th colspan="2">토지</th></tr>
+                    <tr><td>대지면적</td><td>471.9m² | 142.75평</td></tr>
+                    <tr><td>용도지역</td><td>일반상업지역</td></tr>
+                    <tr><td>공시지가</td><td>17.7억</td></tr>
+                    <tr><td>지가/매가</td><td class="highlight" style="font-weight: bold">58.03%</td></tr>
+                    <tr><td>형상</td><td>세장형</td></tr>
+                </table>
+            </div>
+
+            <div class="tab-content" id="building">
+                <table>
+                    <tr><th colspan="2">건축물</th></tr>
+                    <tr><td>연면적</td><td>1268.14m² | 383.61평</td></tr>
+                    <tr><td>건폐율 / 용적률</td><td>55.36% / 53.66%</td></tr>
+                    <tr><td>규모</td><td>B1 / 4F</td></tr>
+                    <tr><td>주차대수</td><td>5대</td></tr>
+                    <tr><td>승강기</td><td>-</td></tr>
+                    <tr><td>방향</td><td>북 (주출입구 기준)</td></tr>
+                    <tr><td>사용승인일</td><td>1995년 06월 23일</td></tr>
+                </table>
+            </div>
+
+            <div class="tab-content" id="price">
+                <table>
+                    <tr><th colspan="2">금액</th></tr>
+                    <tr><td>보증금 / 차임</td><td>- / -</td></tr>
+                    <tr><td>수익률</td><td style="font-weight: bold">4.5%</td></tr>
+                    <tr><td>평단가</td><td class="highlight" style="font-weight: bold">2,136만원</td></tr>
+                    <tr><td>매매가</td><td class="highlight" style="font-weight: bold">30.5억</td></tr>
+                </table>
+            </div>
+
+<div class="tab-content" id="transaction">
+    <div class="transaction-list">
+        <div class="transaction-header" style="font-weight: bold;">거래사례</div>
+        <table class="transaction-table">
+            <tr class="transaction-item">
+                <td class="transaction-address">동래구 안락동 426-45</td>
+                <td class="transaction-details">
+                    <div class="transaction-date">21년 6월</div>
+                    <div class="transaction-distance">본건 30m</div>
+                    <div class="transaction-distance">일반상업지역</div>
+                    <div class="transaction-distance">평 2,648만 | 17.5억</div>
+                </td>
+            </tr>
+            <tr class="transaction-item">
+                <td class="transaction-address">동래구 안락동 430-61</td>
+                <td class="transaction-details">
+                    <div class="transaction-date">22년 5월</div>
+                    <div class="transaction-distance">본건 153m</div>
+                    <div class="transaction-distance">제2종일반주거지역</div>
+                    <div class="transaction-distance">평 4,100만 | 62억</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
+<script>
+var map, geocoder, circle;
+var activePolygon = null;
+
+
+function initializeMap() {
+    geocoder = new kakao.maps.services.Geocoder();
+
+    var address = document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span:nth-child(1)').textContent.trim() + 
+                  document.querySelector('#content > div:nth-child(1) > div:nth-child(1) > span.hidden').textContent.trim();
+
+    geocoder.addressSearch(address, function(result, status) {
+        if (status === kakao.maps.services.Status.OK) {
+            var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+            var mapOption = {
+                center: coords,
+                level: 3
+            };
+            map = new kakao.maps.Map(document.getElementById('map'), mapOption);
+            map.setMinLevel(3);
+            map.setMaxLevel(4);
+
+            circle = new kakao.maps.Circle({
+                center: coords,
+                radius: 100,
+                strokeWeight: 1,
+                strokeColor: '#75B8FA',
+                strokeOpacity: 1,
+                fillColor: '#CFE7FF',
+                fillOpacity: 0.7
+            });
+            circle.setMap(map);
+
+            setupEventHandlers();
+        } else {
+            console.error("Geocoding failed: " + status);
+        }
+    });
+}
+
+var polygons = [
+    "POLYGON ((129.098811972584 35.2010489113513,129.09873818878 35.2009281989564,129.098596480229 35.2009680171287,129.098677308467 35.2011026948562,129.098811972584 35.2010489113513))",
+    "POLYGON ((129.09915208303 35.1994817418793,129.099063077492 35.1992483462861,129.098877486207 35.1992924004464,129.098861027741 35.1993216534428,129.098990848442 35.1995269302847,129.09915208303 35.1994817418793))"
+];
+
+
+function displayPolygonAndOverlay(index) {
+    console.log("Displaying polygon for index:", index); // 디버깅용 로그
+    
+    // polygons 배열의 길이 확인
+    if (!polygons[index]) {
+        console.error(`Invalid index: ${index}. No polygon or overlay found for this index.`);
+        return; // 유효하지 않은 인덱스인 경우 함수를 종료하여 오류 방지
+    }
+
+    if (activePolygon) {
+        activePolygon.setMap(null);
+    }
+
+
+    var polygonString = polygons[index];
+    var polygonCoords = polygonString
+        .replace("POLYGON ((", "")
+        .replace("))", "")
+        .split(",")
+        .map(function(coord) {
+            var xy = coord.trim().split(" ");
+            return new kakao.maps.LatLng(parseFloat(xy[1]), parseFloat(xy[0]));
+        });
+
+    console.log("Polygon coordinates:", polygonCoords); // 폴리곤 좌표 확인용
+
+    activePolygon = new kakao.maps.Polygon({
+        path: polygonCoords,
+        strokeWeight: 2,
+        strokeColor: '#004c80',
+        strokeOpacity: 0.8,
+        strokeStyle: 'solid',
+        fillColor: '#0099ff',
+        fillOpacity: 0.7
+    });
+    activePolygon.setMap(map);
+
+
+    // 지도 중심을 폴리곤의 첫 번째 좌표로 이동
+    console.log("Setting map center to:", polygonCoords[0]); // 지도 중심 확인용
+    map.setCenter(polygonCoords[0]);
+    map.setLevel(3); // 필요에 따라 지도의 줌 레벨을 설정
+}
+
+function setupEventHandlers() {
+    document.querySelectorAll('.transaction-item').forEach(function (item, index) {
+        item.addEventListener('click', function () {
+            console.log(`Transaction item clicked: ${index}`); // 디버깅용 로그
+            displayPolygonAndOverlay(index);
+        });
+    });
+
+    const tabs = document.querySelectorAll('.tab-item');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            this.classList.add('active');
+            document.getElementById(this.dataset.tab).classList.add('active');
+        });
+    });
+}
+
+initializeMap();
+setupEventHandlers();
+
+
+
+</script>
+</body>
