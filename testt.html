@@ -1,143 +1,175 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            font-family: Arial, sans-serif;
-        }
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow: hidden; /* 스크롤 방지 */
+}
 
-        #container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
+#container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* 스크롤 방지 */
+}
 
-        #map {
-            flex: 1;
-            width: 100%;
-            height: 100%;
-        }
 
+    #map {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        transition: height 0.3s ease;
+    }
+
+    #details {
+        background: white;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        overflow-y: auto;
+        box-sizing: border-box;
+        z-index: 10;
+        word-wrap: break-word;
+        transition: bottom 0.3s ease, max-height 0.3s ease;
+        position: relative;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .slider-container {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 15px;
+    }
+
+    .slider {
+        display: flex;
+        height: 100%;
+        transition: transform 0.5s ease;
+    }
+
+    .slide {
+        min-width: 100%;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .button-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 100;
+    }
+
+    .toggle-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 14px;
+        margin: 5px;
+    }
+
+    .toggle-button:hover {
+        background-color: #0056b3;
+    }
+
+    @media (min-width: 768px) {
         #details {
-            background: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            padding: 15px;
-            overflow-y: auto;
-            box-sizing: border-box;
-            z-index: 10;
-            word-wrap: break-word;
-            transition: bottom 0.3s ease;
-        }
-        .hidden {
-            display: none;
-        }
-
-        @media (min-width: 768px) {
-            #details {
-                width: 500px;
-                height: 100%;
-                position: absolute;
-                left: 0;
-                top: 0;
-            }
-
-            .button-container {
-            display: none;
-        }
-
-        }
-
-        @media (max-width: 767px) {
-            #container {
-                flex-direction: column-reverse;
-            }
-
-            #details {
-                width: 100%;
-                position: absolute;
-                bottom: -30%;
-                left: 0;
-                transition: bottom 0.3s ease;
-                max-height: 60%;
-                overflow-y: auto;
-                box-sizing: border-box;
-                padding-bottom: 10px;
-            }
-        .transaction-item {
-            padding: 5px 0;
-            cursor: pointer;
-            color: blue;
-            text-decoration: underline;
+            width: 500px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
         }
 
         .button-container {
+            display: none;
+        }
+    }
+
+    @media (max-width: 767px) {
+        #container {
+            flex-direction: column-reverse;
+        }
+
+        #map {
+            height: 40vh;
+        }
+
+        #details {
+            width: 100vw;
             position: absolute;
-            top: 10px;
-            right: 10px;
+            bottom: 0;
+            left: 0;
+            max-height: 100vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            padding-bottom: 10px;
         }
 
-        .toggle-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 2px;
+        #details.full-screen {
+            bottom: 0;
+            max-height: 100vh;
         }
 
-        .toggle-button:hover {
-            background-color: #0056b3;
-        }
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-            table-layout: fixed;
+        #details.collapsed {
+            bottom: -60%;
+            max-height: 40%;
         }
 
-        th, td {
-            padding: 5px 0;
-            text-align: left;
-            vertical-align: top;
-            white-space: nowrap;
+        #map.hidden {
+            height: 0;
         }
+    }
 
-        .divider {
-            height: 1px;
-            background-color: #ddd;
-            margin: 10px 0;
-        }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+        table-layout: fixed;
+    }
 
-        .highlight {
-            background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
-            padding: 0 2px;
-            display: inline-block;
-        }
+    th, td {
+        padding: 5px 0;
+        text-align: left;
+        vertical-align: top;
+        white-space: nowrap;
+    }
 
+    .divider {
+        height: 1px;
+        background-color: #ddd;
+        margin: 10px 0;
+    }
 
-    </style>
+    .highlight {
+        background: linear-gradient(to bottom, transparent 50%, rgba(255, 0, 0, 0.5) 50%);
+        padding: 0 2px;
+        display: inline-block;
+    }
+</style>
+
 <div id="container">
     <div id="map"></div>
-        <div id="details">
-        <div class="handle"></div>
-
-        <!-- 이미지 슬라이더 -->
+    <div id="details">
         <div class="slider-container">
             <div class="slider">
-                <div class="slide" style="background-image: url('image1.jpg');" alt="사진1"></div>
-                <div class="slide" style="background-image: url('image2.jpg');" alt="사진2"></div>
-                <div class="slide" style="background-image: url('image3.jpg');" alt="사진3"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/15173232/%ED%92%8D%EB%85%84%EC%98%A4%EB%A6%AC%EB%B0%95%EC%82%AC-%EC%A0%90%EC%A3%BC-%EC%A0%9C%EA%B3%B5.jpg');" alt="사진1"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/15173231/%ED%92%8D%EB%85%84%EC%98%A4%EB%A6%AC%EB%B0%95%EC%82%AC-%EC%A0%90%EC%A3%BC-%EC%A0%9C%EA%B3%B52.jpg');" alt="사진2"></div>
+                <div class="slide" style="background-image: url('https://cdn.hotplacehunter.co.kr/hotplacehunter/2024/02/05193148/%ED%8C%94%EB%A0%88%EB%93%9C-%EC%8B%A0-kimhj8574%EB%8B%98-%EC%9D%B8%EC%8A%A4%ED%83%80%EA%B7%B8%EB%9E%A8.jpg');" alt="사진3"></div>
             </div>
         </div>
 
         <div id="content">
-            
             <div style="background-color: #f2f7fe; padding: 16px;">
                 <div style="font-size: 16px; margin-bottom: 8px; font-weight: bold;">
                     <span>부산시 동래구 사직동 </span> <span class="hidden">78-7</span>
@@ -180,20 +212,19 @@
             </table>
 
             <div class="divider"></div>
-                        <div class="transaction-list">
+            <div class="transaction-list">
                 <div class="transaction-header" style="font-weight: bold;">인근 거래사례</div>
                 <div class="transaction-content">
                     <div class="transaction-item" data-address="부산시 동래구 사직동 45-3">부산시 동래구 사직동 45-3</div>
                     <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
                 </div>
-                        <div class="button-container">
-            <button class="toggle-button" id="expandButton">△</button>
-            <button class="toggle-button" id="collapseButton">▽</button>
-        </div>
+            </div>
         </div>
     </div>
-    
-</div>
+
+    <div class="button-container">
+        <button class="toggle-button" id="toggleButton">지도보기</button>
+    </div>
 </div>
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
@@ -201,6 +232,46 @@
 var map, geocoder, circle;
 var activePolygon = null;
 var activeOverlay = null;
+
+function setupSlider() {
+    const slider = document.querySelector('.slider');
+    const slides = document.querySelectorAll('.slide');
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    // 클론 노드 추가 (첫 번째 슬라이드를 마지막에 복제)
+    const firstClone = slides[0].cloneNode(true);
+    const lastClone = slides[totalSlides - 1].cloneNode(true);
+    
+    slider.appendChild(firstClone);
+    slider.insertBefore(lastClone, slides[0]);
+
+    // 슬라이더의 초기 위치 설정 (첫 번째 슬라이드로 설정)
+    slider.style.transform = `translateX(-100%)`;
+
+    function showSlide(index) {
+        slider.style.transition = 'transform 0.5s ease-in-out';
+        slider.style.transform = `translateX(-${index * 100}%)`;
+    }
+
+    function nextSlide() {
+        currentIndex++;
+        showSlide(currentIndex);
+
+        // 슬라이드가 끝까지 간 경우 복제된 첫 슬라이드에서 원래 첫 슬라이드로 순간 이동
+        if (currentIndex === totalSlides + 1) {
+            setTimeout(() => {
+                slider.style.transition = 'none';
+                currentIndex = 1; // 첫 슬라이드로 돌아가기
+                slider.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }, 500); // 애니메이션 시간과 동일하게 설정
+        }
+    }
+
+    setInterval(nextSlide, 3000);
+}
+
+
 
 function initializeMap() {
     geocoder = new kakao.maps.services.Geocoder();
@@ -213,9 +284,7 @@ function initializeMap() {
             var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
             var mapOption = {
                 center: coords,
-                level: 3,
-                zoomable: true,
-                draggable: false
+                level: 3
             };
             map = new kakao.maps.Map(document.getElementById('map'), mapOption);
             map.setMinLevel(3);
@@ -279,28 +348,54 @@ function displayPolygonAndOverlay(index) {
 
     // 클릭한 위치로 지도 중심 이동
     map.setCenter(polygonCoords[0]);
-    details.style.bottom = '-30%';
+
+    // 지도 표시 상태로 전환
+    toggleMapView(true);
 }
 
 function setupEventHandlers() {
-    var details = document.getElementById('details');
-    var expandButton = document.getElementById('expandButton');
-    var collapseButton = document.getElementById('collapseButton');
+    const details = document.getElementById('details');
+    const map = document.getElementById('map');
+    const toggleButton = document.getElementById('toggleButton');
 
-    expandButton.addEventListener('click', function() {
-        details.style.bottom = '0px';
+    // 기본 상태는 "지도가리기" (디테일이 전체 화면을 차지)
+    let mapVisible = false;
+
+    function toggleMapView(showMap) {
+        if (showMap) {
+            details.classList.remove('full-screen');
+            details.classList.add('collapsed');
+            map.classList.remove('hidden');
+            toggleButton.textContent = '정보보기';
+            mapVisible = true;
+        } else {
+            details.classList.add('full-screen');
+            details.classList.remove('collapsed');
+            map.classList.add('hidden');
+            toggleButton.textContent = '지도보기';
+            mapVisible = false;
+        }
+    }
+
+    toggleButton.addEventListener('click', function () {
+        toggleMapView(!mapVisible);
     });
 
-    collapseButton.addEventListener('click', function() {
-        details.style.bottom = '-30%';
-    });
-
-    document.querySelectorAll('.transaction-item').forEach(function(item, index) {
-        item.addEventListener('click', function() {
+    document.querySelectorAll('.transaction-item').forEach(function (item, index) {
+        item.addEventListener('click', function () {
             displayPolygonAndOverlay(index);
         });
     });
+
+    // 함수를 전역으로 사용하기 위해 재정의
+    window.toggleMapView = toggleMapView;
 }
+
+// 초기화
+initializeMap();
+setupEventHandlers();
+setupSlider();
+
 
 var polygons = [
     "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
@@ -317,6 +412,4 @@ var customOverlays = [
         <span style="font-size:12px; color:#000;">2023년 06월<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
     </div>`
 ];
-
-initializeMap();
 </script>
