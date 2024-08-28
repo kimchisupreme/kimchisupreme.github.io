@@ -1,31 +1,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    font-family: Arial, sans-serif;
-    overflow: hidden; /* 스크롤 방지 */
-}
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
 
 #container {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    overflow: hidden; /* 스크롤 방지 */
 }
 
-
     #map {
-        flex: 1;
         width: 100%;
         height: 100%;
         transition: height 0.3s ease;
     }
 
     #details {
-        background: white;
+        background: rgb(255, 255, 255);
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
         padding: 15px;
         overflow-y: auto;
@@ -96,24 +93,27 @@ body {
         }
     }
 
+    /*이 부분이 모바일임*/
     @media (max-width: 767px) {
         #container {
             flex-direction: column-reverse;
         }
 
         #map {
-            height: 40vh;
+            height: 30vh;
+            bottom: 70%;
         }
 
         #details {
-            width: 100vw;
+            width: 100%;
             position: absolute;
             bottom: 0;
             left: 0;
-            max-height: 100vh;
+            max-height: 100%;
             overflow-y: auto;
             box-sizing: border-box;
             padding-bottom: 10px;
+            height: 70vh;
         }
 
         #details.full-screen {
@@ -158,6 +158,7 @@ body {
     }
 </style>
 
+<body>
 <div id="container">
     <div id="map"></div>
     <div id="details">
@@ -221,12 +222,7 @@ body {
             </div>
         </div>
     </div>
-
-    <div class="button-container">
-        <button class="toggle-button" id="toggleButton">지도보기</button>
-    </div>
 </div>
-
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=86da5fabdefbd14f4a0c5f1ac75f0d21&libraries=services"></script>
 <script>
 var map, geocoder, circle;
@@ -239,14 +235,12 @@ function setupSlider() {
     let currentIndex = 0;
     const totalSlides = slides.length;
 
-    // 클론 노드 추가 (첫 번째 슬라이드를 마지막에 복제)
     const firstClone = slides[0].cloneNode(true);
     const lastClone = slides[totalSlides - 1].cloneNode(true);
     
     slider.appendChild(firstClone);
     slider.insertBefore(lastClone, slides[0]);
 
-    // 슬라이더의 초기 위치 설정 (첫 번째 슬라이드로 설정)
     slider.style.transform = `translateX(-100%)`;
 
     function showSlide(index) {
@@ -258,20 +252,17 @@ function setupSlider() {
         currentIndex++;
         showSlide(currentIndex);
 
-        // 슬라이드가 끝까지 간 경우 복제된 첫 슬라이드에서 원래 첫 슬라이드로 순간 이동
         if (currentIndex === totalSlides + 1) {
             setTimeout(() => {
                 slider.style.transition = 'none';
-                currentIndex = 1; // 첫 슬라이드로 돌아가기
+                currentIndex = 1;
                 slider.style.transform = `translateX(-${currentIndex * 100}%)`;
-            }, 500); // 애니메이션 시간과 동일하게 설정
+            }, 500);
         }
     }
 
     setInterval(nextSlide, 3000);
 }
-
-
 
 function initializeMap() {
     geocoder = new kakao.maps.services.Geocoder();
@@ -290,7 +281,6 @@ function initializeMap() {
             map.setMinLevel(3);
             map.setMaxLevel(4);
 
-            // Circle 생성 및 추가
             circle = new kakao.maps.Circle({
                 center: coords,
                 radius: 100,
@@ -311,10 +301,10 @@ function initializeMap() {
 
 function displayPolygonAndOverlay(index) {
     if (activePolygon) {
-        activePolygon.setMap(null);  // 기존의 폴리곤 제거
+        activePolygon.setMap(null);
     }
     if (activeOverlay) {
-        activeOverlay.setMap(null);  // 기존의 오버레이 제거
+        activeOverlay.setMap(null);
     }
 
     var polygonString = polygons[index];
@@ -339,63 +329,27 @@ function displayPolygonAndOverlay(index) {
     activePolygon.setMap(map);
 
     activeOverlay = new kakao.maps.CustomOverlay({
-        position: polygonCoords[0], // 폴리곤의 첫 번째 좌표에 오버레이 표시
+        position: polygonCoords[0],
         content: customOverlays[index],
         yAnchor: 1,
         xAnchor: 1.2
     });
     activeOverlay.setMap(map);
 
-    // 클릭한 위치로 지도 중심 이동
     map.setCenter(polygonCoords[0]);
-
-    // 지도 표시 상태로 전환
-    toggleMapView(true);
 }
 
 function setupEventHandlers() {
-    const details = document.getElementById('details');
-    const map = document.getElementById('map');
-    const toggleButton = document.getElementById('toggleButton');
-
-    // 기본 상태는 "지도가리기" (디테일이 전체 화면을 차지)
-    let mapVisible = false;
-
-    function toggleMapView(showMap) {
-        if (showMap) {
-            details.classList.remove('full-screen');
-            details.classList.add('collapsed');
-            map.classList.remove('hidden');
-            toggleButton.textContent = '정보보기';
-            mapVisible = true;
-        } else {
-            details.classList.add('full-screen');
-            details.classList.remove('collapsed');
-            map.classList.add('hidden');
-            toggleButton.textContent = '지도보기';
-            mapVisible = false;
-        }
-    }
-
-    toggleButton.addEventListener('click', function () {
-        toggleMapView(!mapVisible);
-    });
-
     document.querySelectorAll('.transaction-item').forEach(function (item, index) {
         item.addEventListener('click', function () {
             displayPolygonAndOverlay(index);
         });
     });
-
-    // 함수를 전역으로 사용하기 위해 재정의
-    window.toggleMapView = toggleMapView;
 }
 
-// 초기화
 initializeMap();
 setupEventHandlers();
 setupSlider();
-
 
 var polygons = [
     "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
@@ -413,3 +367,5 @@ var customOverlays = [
     </div>`
 ];
 </script>
+
+</body>
