@@ -1,4 +1,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+    document.addEventListener('scroll', function() {
+    var iframeDocument = document.documentElement;
+    var scrollTop = iframeDocument.scrollTop;
+    var scrollHeight = iframeDocument.scrollHeight;
+    var clientHeight = iframeDocument.clientHeight;
+
+    // 최하단에서 스크롤을 내리는 경우
+    if (scrollTop + clientHeight >= scrollHeight) {
+        parent.postMessage({ action: 'scroll-down' }, '*');
+    }
+
+    // 최상단에서 스크롤을 올리는 경우
+    if (scrollTop === 0) {
+        parent.postMessage({ action: 'scroll-up' }, '*');
+    }
+});
+</script>
 <style>
     body {
         margin: 0;
