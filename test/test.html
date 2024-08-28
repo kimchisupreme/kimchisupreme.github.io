@@ -91,6 +91,11 @@
         .button-container {
             display: none;
         }
+
+        .tab-menu, .tab-item,.tab-item:last-child  {
+            display: none;
+
+        }
     }
 
     /*이 부분이 모바일임*/
@@ -188,6 +193,39 @@
         padding: 0 2px;
         display: inline-block;
     }
+
+    .transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-item {
+    border-bottom: 1px solid #ddd;
+}
+
+.transaction-address {
+    padding: 10px;
+    vertical-align: middle; /* 주소가 상단에 정렬되도록 설정 */
+}
+
+.transaction-details {
+    padding: 10px;
+    text-align: left;
+    font-size: 12px;
+    color: #555;
+    vertical-align: middle; /* 상단 정렬 */
+}
+
+.transaction-date, .transaction-distance {
+    display: block;
+    color: #888; /* 회색 폰트 */
+    font-size: 12px; /* 작은 폰트 크기 */
+}
+
+.transaction-distance {
+    margin-top: 5px; /* 상하 간격 조절 */
+}
+
 </style>
 
 <body>
@@ -246,15 +284,28 @@
                 </table>
             </div>
 
-            <div class="tab-content" id="transaction">
-                <div class="transaction-list">
-                    <div class="transaction-header" style="font-weight: bold;">인근 거래사례</div>
-                    <div class="transaction-content">
-                        <div class="transaction-item" data-address="부산시 동래구 사직동 45-3">부산시 동래구 사직동 45-3</div>
-                        <div class="transaction-item" data-address="부산시 동래구 사직동 22-1">부산시 동래구 사직동 22-1</div>
-                    </div>
-                </div>
-            </div>
+<div class="tab-content" id="transaction">
+    <div class="transaction-list">
+        <div class="transaction-header" style="font-weight: bold;">거래사례</div>
+        <table class="transaction-table">
+            <tr class="transaction-item">
+                <td class="transaction-address">부산시 동래구 사직동 45-3</td>
+                <td class="transaction-details">
+                    <div class="transaction-date">23년 6월</div>
+                    <div class="transaction-distance">본건 130m</div>
+                </td>
+            </tr>
+            <tr class="transaction-item">
+                <td class="transaction-address">부산시 동래구 사직동 22-1</td>
+                <td class="transaction-details">
+                    <div class="transaction-date">23년 6월</div>
+                    <div class="transaction-distance">본건 130m</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
         </div>
     </div>
 </div>
@@ -334,7 +385,33 @@ function initializeMap() {
     });
 }
 
+var polygons = [
+    "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
+    "POLYGON ((129.063735913504 35.2024668526064,129.063670181407 35.2023692973858,129.06363645851 35.2023848719867,129.063606434351 35.2023402075512,129.063506021176 35.2023840916372,129.063582251272 35.2024960360976,129.063643175606 35.2025099126297,129.063735913504 35.2024668526064))"
+];
+
+var customOverlays = [
+    `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
+        <span style="font-size:14px; color:#555;">23년 6월<br></span>
+        <span style="font-size:14px; color:#000;">본건 130m<br>준주거지역<br>평단가: 3,000만원 가로길이는 무한히 늘어나는지 따로<br>계: 21억</span>
+        <span style="font-size:14px; color:#000;">본건 130m<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
+        <span style="font-size:14px; color:#000;">본건 130m<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
+    </div>`,
+     `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
+        <span style="font-size:14px; color:#555;">본건 130m<br></span>
+        <span style="font-size:14px; color:#000;">2023년 06월<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
+    </div>`
+];
+
 function displayPolygonAndOverlay(index) {
+    console.log("Displaying polygon for index:", index); // 디버깅용 로그
+    
+    // polygons와 customOverlays 배열의 길이 확인
+    if (!polygons[index] || !customOverlays[index]) {
+        console.error(`Invalid index: ${index}. No polygon or overlay found for this index.`);
+        return; // 유효하지 않은 인덱스인 경우 함수를 종료하여 오류 방지
+    }
+
     if (activePolygon) {
         activePolygon.setMap(null);
     }
@@ -352,13 +429,15 @@ function displayPolygonAndOverlay(index) {
             return new kakao.maps.LatLng(parseFloat(xy[1]), parseFloat(xy[0]));
         });
 
+    console.log("Polygon coordinates:", polygonCoords); // 폴리곤 좌표 확인용
+
     activePolygon = new kakao.maps.Polygon({
         path: polygonCoords,
-        strokeWeight: 1,
-        strokeColor: '#75B8FA',
-        strokeOpacity: 1,
+        strokeWeight: 2,
+        strokeColor: '#004c80',
+        strokeOpacity: 0.8,
         strokeStyle: 'solid',
-        fillColor: '#CFE7FF',
+        fillColor: '#0099ff',
         fillOpacity: 0.7
     });
     activePolygon.setMap(map);
@@ -371,12 +450,16 @@ function displayPolygonAndOverlay(index) {
     });
     activeOverlay.setMap(map);
 
+    // 지도 중심을 폴리곤의 첫 번째 좌표로 이동
+    console.log("Setting map center to:", polygonCoords[0]); // 지도 중심 확인용
     map.setCenter(polygonCoords[0]);
+    map.setLevel(3); // 필요에 따라 지도의 줌 레벨을 설정
 }
 
 function setupEventHandlers() {
     document.querySelectorAll('.transaction-item').forEach(function (item, index) {
         item.addEventListener('click', function () {
+            console.log(`Transaction item clicked: ${index}`); // 디버깅용 로그
             displayPolygonAndOverlay(index);
         });
     });
@@ -399,21 +482,6 @@ initializeMap();
 setupEventHandlers();
 setupSlider();
 
-var polygons = [
-    "POLYGON ((129.029811385468 35.1479175547452,129.029821494769 35.1479554995044,129.02984598483 35.1480070513819,129.029860358942 35.1480015497346,129.029950335728 35.1479713331436,129.029954033838 35.1479709086356,129.029954624089 35.1479641753607,129.029963281533 35.1479610546284,129.029969191246 35.1478515113303,129.029811385468 35.1479175547452))",
-    "POLYGON ((129.063735913504 35.2024668526064,129.063670181407 35.2023692973858,129.06363645851 35.2023848719867,129.063606434351 35.2023402075512,129.063506021176 35.2023840916372,129.063582251272 35.2024960360976,129.063643175606 35.2025099126297,129.063735913504 35.2024668526064))"
-];
 
-var customOverlays = [
-    `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
-        <span style="font-size:12px; color:#555;">23년 6월<br></span>
-        <span style="font-size:12px; color:#000;">본건 130m<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
-    </div>`,
-     `<div style="padding:5px; background-color:white; border:1px solid black; border-radius: 3px;">
-        <span style="font-size:12px; color:#555;">본건 130m<br></span>
-        <span style="font-size:12px; color:#000;">2023년 06월<br>준주거지역<br>평단가: 3,000만원<br>계: 21억</span>
-    </div>`
-];
 </script>
-
 </body>
